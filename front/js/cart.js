@@ -1,10 +1,11 @@
 //---Récupérer les keys et les values qui sont dans le local strage en convertissant aux objets Javascript---
 let kanapLocalstrage = JSON.parse(localStorage.getItem("kanapProduct"));
-// console.log(kanapLocalstrage);
-let kanapLocalstragecopie= [];
+
+//---Déclaration de variable pour récupérer les données manquant dans le local strage---
+let kanapLocalstrageCopy= [];
+
 //---Récupérer les données par API
 let kanapData;
-
 
 const callApi = async() => {
     try{
@@ -21,27 +22,29 @@ const callApi = async() => {
 const getPrice = async()=> {
   let tmp;
   await callApi();
-  kanapLocalstrage.forEach(canap => {
+  kanapLocalstrage.map((canap) => {
     tmp = kanapData.filter(element => element._id === canap.id)
     const product = {
-      ...canap,
-      price: tmp[0].price,
-      imageUrl: tmp[0].imageUrl,
-      // name: tmp[0].name
+      ...canap, //---Syntaxe de décomposition: enlever accolades
+      price : tmp[0].price,
+      imageUrl : tmp[0].imageUrl,
+      // name: tmp[0].name,
+      
     }
-    kanapLocalstragecopie.push(product)
+    console.log(product);
+    kanapLocalstrageCopy.push(product)
   });
 }
 
 //---Afficher des produits---
-const displayProducts = async() => {
+const displayCart = async() => {
   await getPrice();
-console.log(kanapLocalstragecopie);
-    if (kanapLocalstragecopie){
-        await kanapLocalstragecopie;
+console.log(kanapLocalstrageCopy);
+    if (kanapLocalstrageCopy){
+        await kanapLocalstrageCopy;
 
     const displayProductsCart = document.getElementById("cart__items")
-    .insertAdjacentHTML( "beforeend",kanapLocalstragecopie.map((product) => `
+    .insertAdjacentHTML( "beforeend",kanapLocalstrageCopy.map((product) => `
                 <article class="cart__item" data-id="" data-color="{product-color}">
                     <div class="cart__item__img">
                     <img src="${product.imageUrl}" alt="Photographie d'un canapé">
@@ -68,4 +71,4 @@ console.log(kanapLocalstragecopie);
              alert("Votre panier est vide")
     }
  };
-displayProducts();
+displayCart();
