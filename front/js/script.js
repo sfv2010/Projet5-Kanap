@@ -1,12 +1,11 @@
-// ---Récupérer les donnée par API avec la déclaration du tableau---
+// ---Récupérer les donnée par API ---
 
-let kanapData = [];
+let kanapData;
 
-const appelerApi = async() => {
+const callApi = async() => {
     try{
       const res = await fetch("http://localhost:3000/api/products");
       kanapData = await res.json();
-      // console.log(kanapData);
     }
     catch(err){
       document
@@ -14,28 +13,28 @@ const appelerApi = async() => {
       .innerText = " Erreur d'affichage - nous sommes désolés ";
     }
   }
-appelerApi();
+callApi();
 
 //---Insérer les produits dans la page d'acceuil (Affichage les 8 photos et les textes)---
 
-const afficherProduit = async() => {
-    await appelerApi();
+const displayProducts = async() => {
+    await callApi();
 
     document
     .getElementById("items")
-    .innerHTML = kanapData.map((index) =>
+    .innerHTML = kanapData.map((value) =>
     
-      `<a href="./product.html?id=${index._id}">
+      `<a href="./product.html?id=${value._id}">
           <article>
-            <img src="${index.imageUrl}" alt="${index.altTxt}">
-            <h3 class="productName">${index.name}</h3>
-            <p class="productDescription">${index.description}</p>
+            <img src="${value.imageUrl}" alt="${value.altTxt}">
+            <h3 class="productName">${value.name}</h3>
+            <p class="productDescription">${value.description}</p>
           </article>
         </a>`
     )
   .join("");
 };
-afficherProduit();
+displayProducts();
 
 
 // const endPoint = "http://localhost:3000/api/products";
