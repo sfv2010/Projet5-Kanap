@@ -5,14 +5,12 @@ const kanapId = urlSearchParams.get("id");
  console.log(kanapId); //aprés html?id=
 
 //---Récupérer l'id du produit à afficher ---
-
 let kanapData;
 
 const getProductsById = async () => {
   try {
     const res = await fetch(`http://localhost:3000/api/products/${kanapId}`);
     kanapData = await res.json()
-    // console.log(kanapData);
   }
   catch(err){
     document
@@ -20,18 +18,18 @@ const getProductsById = async () => {
     .innerText = " Erreur d'affichage - nous sommes désolés ";
   }
 };
-// getProductsById();
+getProductsById();
 
-//---Insérer un produit et ses détails dans la page Produit---
+//---Afficher un produit et ses détails dans la page Produit---
 
 const displayproductsById = async () => {
 
     await getProductsById();
-
-    document
-    .querySelector(".item__img")
-    .insertAdjacentHTML("beforeend",
-    ` <img src="${kanapData.imageUrl}" alt="${kanapData.altTxt}"> `) ; 
+    
+    const productImage = document.createElement("img");
+    document.querySelector(".item__img").appendChild(productImage);
+    productImage.src = kanapData.imageUrl;
+    productImage.alt = kanapData.altTxt; 
 
     document
     .getElementById("title")
@@ -45,10 +43,14 @@ const displayproductsById = async () => {
     .getElementById("description")
     .innerText = kanapData.description;
 
-    document
-    .querySelector("#colors")
-    .insertAdjacentHTML("beforeend", kanapData.colors.map((colors) =>
-    `<option value="${colors}">${colors}</option>`));
+    for (let i = 0; i < kanapData.colors.length; i++){
+    const productOption = document.createElement("option");
+    document.getElementById("colors").appendChild(productOption);
+    productOption.value = kanapData.colors[i];
+    productOption.innerText = kanapData.colors[i];
+    }
+    // .insertAdjacentHTML("beforeend", kanapData.colors.map(colors =>
+    // `<option value="${colors}">${colors}</option>`));
    };
 
 displayproductsById();
@@ -58,15 +60,14 @@ displayproductsById();
 
 document
 .getElementById("addToCart")
-.addEventListener("click",(event) =>{
+.addEventListener("click",event =>{
     event.preventDefault();
     const selectUser = {
         name:kanapData.name,
         id: kanapId,
         color: document.getElementById('colors').value,
-        quantity: Number( document.getElementById('quantity').value)
+        quantity: document.getElementById('quantity').valueAsNumber
     }
-    // console.log(selectUser);
     
     //---Si les options ne sont pas bien sélectionnés---
     if (selectUser.color.length === 0 && selectUser.quantity <= 0) {
@@ -85,9 +86,9 @@ document
     
     //---Local strage---
     //---Récupérer les keys et les values qui sont dans le local strage en convertissant aux objets Javascript---
-    let kanapLocalstrage = JSON.parse(localStorage.getItem("kanapProduct"));
+    const kanapLocalstrage = JSON.parse(localStorage.getItem("kanapProduct"));
     
-    //---Function pour ajouter un produit dans le local strage---
+    //---Function pour enregistrer un produit dans le local strage---
     const addLocalstrage = () => {
         kanapLocalstrage.push(selectUser);     
     };
@@ -98,7 +99,7 @@ document
     //---S'il y a dejà des produits d'enregistré dans le local storage---
     if(kanapLocalstrage){
         //---Si le produit identique est déja présent dans le panier ( même id + même couleur),on incrémente---
-        let sameProduct = kanapLocalstrage.find( (product) => product.id === selectUser.id && product.color === selectUser.color);
+        let sameProduct = kanapLocalstrage.find( product => product.id === selectUser.id && product.color === selectUser.color);
         if (sameProduct != undefined ){
             sameProduct.quantity = Number(selectUser.quantity += sameProduct.quantity);
         }else {
@@ -107,7 +108,7 @@ document
         storeLocalstrage();  
     }
 
-    //---'il n'y a pas de produit d'enregistré dans le local storage---
+    //---S'il n'y a pas de produit d'enregistré dans le local storage---
     else{
         kanapLocalstrage = [];
         addLocalstrage();  
