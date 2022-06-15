@@ -28,7 +28,7 @@ const callApi = async() => {
 const getPrice = async()=> {
     try{
         await callApi();
-        kanapLocalstrage?.forEach( canap => {
+        kanapLocalstrage.forEach( canap => {
             const tmp = kanapData.filter(element => element._id === canap.id);
             const productLocalApi = {
                 ...canap, //---Syntaxe de décomposition. Récupération des données dans le local strage(en enlevant accolades)
@@ -53,7 +53,7 @@ const displayCart = async() => {
     let priceTotal = 0;
     
     if (kanapLocalstrage == 0){
-        return alert("Votre panier est vide");
+        return document.querySelector("h1").innerText = "Votre panier est vide ";
     }else {
         const displayProductsCart = kanapLocalstrageCopy.map( product => {
         
@@ -131,21 +131,21 @@ const displayCart = async() => {
             quantityTotal += Number(product.quantity);
             priceTotal += product.quantity * product.price;
             document.getElementById("totalQuantity").innerText = quantityTotal;
-            document.getElementById("totalPrice").innerText = priceTotal;
+            document.getElementById("totalPrice").innerText = Number(priceTotal).toLocaleString("en") ;
  
-            //---Function pour 
+            //---Function pour écouter si l'utilisateur modifie la quantité et enregistrer la nouvelle dans le localstrage
             cartInput.addEventListener("change", function(event)  {
                 event.preventDefault();   
                 product.quantity = cartInput.value;
                 if (product.quantity <= 0 || product.quantity > 100){
                     return alert ("Veuillez choisir une quantité entre 1 et 100"); 
                 } else {
-                    kanapLocalstrage.forEach(element => {
+                    kanapLocalstrage.filter(element => {
                         if (element.id === product.id && element.color === product.color){
                             element.quantity = product.quantity
                         }     
-                    });   
-                    // document.getElementById("totalQuantity").innerText = quantityTotal;
+                    }); 
+                //---renvoyer la nouvelle quantité choisi dans le localstrage---  
                     storeLocalstrage();
                     location.reload();
                     console.log(product.quantity)
