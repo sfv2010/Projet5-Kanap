@@ -71,22 +71,22 @@ document
     
     //---Si les options ne sont pas bien sélectionnés---
     if (selectUser.color.length === 0 && selectUser.quantity <= 0) {
-        alert ("Veuillez choisir une couleur et une quantité");
-        return;
-        } else if (selectUser.color.length === 0){
-            alert ("Veuillez choisir une couleur");
-            return;
-        } else if (selectUser.quantity <= 0 || Number(selectUser.quantity) > 100 ) {
-            alert ("Veuillez choisir une quantité entre 1 et 100");   
-            return;
-        } else { //---Confirlation d'ajouter au panier---  
-            alert (`Merci, vous avez ajouté ${selectUser.quantity} ${selectUser.name} ${selectUser.color}  à votre panier ! `)
-            location.href= "cart.html" ;
-        };
+        return alert ("Veuillez choisir une couleur et une quantité");
+        
+    } else if (selectUser.color.length === 0){
+        return alert ("Veuillez choisir une couleur");
+
+    } else if (selectUser.quantity <= 0 || Number(selectUser.quantity) > 100 || isNaN(selectUser.quantity)) {
+        return alert ("Veuillez choisir une quantité entre 1 et 100"); 
+                
+    } else { //---Confirlation d'ajouter au panier---  
+        alert (`Merci, vous avez ajouté ${selectUser.quantity} ${selectUser.name} ${selectUser.color}  à votre panier ! `)
+        location.href= "cart.html" ;
+    };
     
     //---Local strage---
     //---Récupérer les keys et les values qui sont dans le local strage en convertissant aux objets Javascript---
-    const kanapLocalstrage = JSON.parse(localStorage.getItem("kanapProduct"));
+    let kanapLocalstrage = JSON.parse(localStorage.getItem("kanapProduct"));
     
     //---Function pour enregistrer un produit dans le local strage---
     const addLocalstrage = () => {

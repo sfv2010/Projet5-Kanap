@@ -20,28 +20,28 @@ const displayProducts = async () => {
     for (let i = 0; i < result.length; i++) {
         //---Créer des nouveaux éléments---
         //---<a href>---
-        let productA = document.createElement("a");
+        const productA = document.createElement("a");
         document.getElementById("items").appendChild(productA);
         productA.href = `./product.html?id=${result[i]._id}`;
 
         //---<article>---
-        let productArticle = document.createElement("article");
+        const productArticle = document.createElement("article");
         productA.appendChild(productArticle);
 
         //---<img src alt>---
-        let productImg = document.createElement("img");
+        const productImg = document.createElement("img");
         productArticle.appendChild(productImg);
         productImg.src = result[i].imageUrl;
         productImg.alt = result[i].altTxt;
 
         //---<h3 class = "productName">---
-        let productH3 = document.createElement("h3");
+        const productH3 = document.createElement("h3");
         productArticle.appendChild(productH3);
         productH3.classList.add("productName");
         productH3.innerText = result[i].name;
 
         //---<p class = "productDescription">---
-        let productP = document.createElement("p");
+        const productP = document.createElement("p");
         productArticle.appendChild(productP);
         productP.classList.add("productDescription");
         productP.innerText = result[i].description;
