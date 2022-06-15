@@ -1,6 +1,11 @@
 //---Récupérer les keys et les values qui sont dans le local strage en convertissant aux objets Javascript---
 let kanapLocalstrage = JSON.parse(localStorage.getItem("kanapProduct"));
 
+//---Function pour enregistrer un produit dans le local strage---
+let storeLocalstrage = () =>{
+  localStorage.setItem("kanapProduct", JSON.stringify(kanapLocalstrage));//stocker la key "kanapProduct" et les values en convertissant au format Json
+};
+
 //---Déclaration de variable pour récupérer les données manquant dans le local strage---
 let kanapLocalstrageCopy= [];
 
@@ -21,26 +26,34 @@ const callApi = async() => {
  
 //---Récupérer les données manquant dans le local strage---
 const getPrice = async()=> {
-    await callApi();
-    kanapLocalstrage.forEach( canap => {
-        const tmp = kanapData.filter(element => element._id === canap.id);
-        const productLocalApi = {
-            ...canap, //---Syntaxe de décomposition. Récupération des données dans le local strage(en enlevant accolades)
-            price : tmp[0].price,//---Récupération des données dans l'APi---
-            imageUrl : tmp[0].imageUrl,
-            altTxt : tmp[0].altTxt
-        }
-    // console.log(productLocalApi);
-    kanapLocalstrageCopy.push(productLocalApi)
-    });
+    try{
+        await callApi();
+        kanapLocalstrage?.forEach( canap => {
+            const tmp = kanapData.filter(element => element._id === canap.id);
+            const productLocalApi = {
+                ...canap, //---Syntaxe de décomposition. Récupération des données dans le local strage(en enlevant accolades)
+                price : tmp[0].price,//---Récupération des données dans l'APi---
+                imageUrl : tmp[0].imageUrl,
+                altTxt : tmp[0].altTxt
+            }
+            //console.table(productLocalApi);
+            kanapLocalstrageCopy.push(productLocalApi)
+        });
+    }catch(e){
+        document.querySelector("h1").innerText = "Votre panier est vide "
+    };
 }
 
-//---Afficher des produits---
+//---Function pour afficher des produits---
 const displayCart = async() => {
     await getPrice();
-    if (kanapLocalstrageCopy.length === 0){
-        return alert("Votre panier est vide");
 
+    //---décralation des variables pour modifier la quantité et afficher le montant total du panier---           
+    let quantityTotal = 0;
+    let priceTotal = 0;
+    
+    if (kanapLocalstrage == 0){
+        return alert("Votre panier est vide");
     }else {
         const displayProductsCart = kanapLocalstrageCopy.map( product => {
         
@@ -86,7 +99,7 @@ const displayCart = async() => {
             //---<p>  afficher le prix---
             const cartPrice = document.createElement("p");
             cartDivDescription.appendChild(cartPrice);
-            cartPrice.innerText = product.price;
+            cartPrice.innerText = Number(product.price).toLocaleString("en") + " €";//pour insérer une ","
             
             //---<div>---
             const cartDivSetting = document.createElement("div");
@@ -103,7 +116,7 @@ const displayCart = async() => {
             cartDivQantity.appendChild(cartQantity);
             cartQantity.innerText = "Qté : "
             
-            //---<input> afficher la quantité--
+            //---<input> la quantité--
             const cartInput = document.createElement("input");
             cartDivQantity.appendChild(cartInput);
             cartInput.setAttribute("type", "number");
@@ -112,15 +125,33 @@ const displayCart = async() => {
             cartInput.setAttribute("min", "1");
             cartInput.setAttribute("max", "100");
             cartInput.setAttribute("value", product.quantity);
-            cartInput.addEventListener("change", event => {
-                event.preventDefault(); 
-                product.quantity += cartInput.value;
-                localStorage.setItem("kanapProduct", JSON.stringify(kanapLocalstrage));
-                // location.reload();
-              
-            })
-            console.log(product.quantity)
+
+            //--- modifier la quantité et afficher le montant total du panier---           
             
+            quantityTotal += Number(product.quantity);
+            priceTotal += product.quantity * product.price;
+            document.getElementById("totalQuantity").innerText = quantityTotal;
+            document.getElementById("totalPrice").innerText = priceTotal;
+ 
+            //---Function pour 
+            cartInput.addEventListener("change", function(event)  {
+                event.preventDefault();   
+                product.quantity = cartInput.value;
+                if (product.quantity <= 0 || product.quantity > 100){
+                    return alert ("Veuillez choisir une quantité entre 1 et 100"); 
+                } else {
+                    kanapLocalstrage.forEach(element => {
+                        if (element.id === product.id && element.color === product.color){
+                            element.quantity = product.quantity
+                        }     
+                    });   
+                    // document.getElementById("totalQuantity").innerText = quantityTotal;
+                    storeLocalstrage();
+                    location.reload();
+                    console.log(product.quantity)
+                };
+            });
+
             //---<div>---
             const cartDivDelete = document.createElement("div");
             cartDivSetting.appendChild(cartDivDelete);
@@ -140,7 +171,7 @@ const displayCart = async() => {
                 console.log(kanapLocalstrage);
           
                 //---renvoyer des produit qui reste dans le localstrage---
-                localStorage.setItem("kanapProduct", JSON.stringify(kanapLocalstrage));
+                storeLocalstrage();
                 alert("Votre article a bien été supprimé de votre panier");
                 
                 //---renouveler la page pour effacer l'affichage du produit supprimé--
@@ -155,25 +186,61 @@ const displayCart = async() => {
 
 displayCart();
 
-//---function pour modifier la quantité---
-const changeQantity = (product,quantity) => {
-  const userQuantity = document.querySelector("input");
 
-};
-//   ;
-//   // for (let i = 0; i < userQuantity.length; i++){
-//     // userQuantity[i].addEventListener("change",event => {
-//     //     event.preventDefault(); 
+// ---function pour afficher le montant total du panier----
+ 
+// for (let i = 0; i < kanapLocalstrage.length; i++) {
+//     let priceInCart = kanapLocalstragecopie[i];
+//     console.log(priceInCart)
+// }
 
-//     const FindQuantity = kanapLocalstrage[i].find(element => element.quantity == )
-  
-     
+
+//  const changeQantity = () => {
+//      const getQuantity = document.querySelectorall(".cart__item");
+
+//      getQuantity.forEach(element => {
+//          getQuantity.addEventListener("change",event => {
+//              let cartQantity = JSON.parse(localStorage.getItem("kanapProduct"));
+//              for ( let cart of cartQantity)
+//              if (getQuantity.id === cart.dataset.id && cart.dataset.color ===getQuantity.color
+//                 ){
+//                     getQuantity.quantity = event.target.value;
+//                     localStorage.kanapProduct = JSON.stringify(cartQantity);
+
+//                 }
+               
+//          })
+           
+//      })
+//  }
+// //     
+//     
+//         getQuantity.addEventListener("change",event => {
+//           for (article of kanapLocalstrage)
+//             if (
+//               artcle.id === cart.dataset.id && getQuantity.dataset.color === article.color
+
+//             ){
+//               article.quantity = element.target.value;
+//               storeLocalstrage();
+
+
+//             }
+//         })
+//     })
+// }
+//     ;
+//     userQuantity.forEach(plus => {
+//         plus.addEventListener("change",event => {
+//             event.preventDefault(); 
+
+//             for (let i = 0; i < userQuantity.length; i++){  
+//                 if(userQuantity[i].id)
+//             }
+//         });
+          
+//           const findQuantity = kanapLocalstrage.find(element => element.quantity.valueAsNumber !== cartInput.value);
+            
+//     };
 // };
-//  cartInput.addEventListener("change",event => {
-//   event.preventDefault(); 
-//   product.quantity = cartInput.value;
-//   localStorage.setItem("kanapProduct", JSON.stringify(kanapLocalstrage));
-//   // location.reload();
-
-// })
-// console.log(cartInput)
+// localStorage.setItem("kanapProduct", JSON.stringify(kanapLocalstrage));
