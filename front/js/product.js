@@ -56,8 +56,8 @@ const displayproductsById = async () => {
 displayproductsById();
 
 // ---Ajouter des produits dans le panier---
-// ---Récupération des données sélectionnées par l'utilisateur---
 
+// ---Récupération des données sélectionnées par l'utilisateur---
 document
 .getElementById("addToCart")
 .addEventListener("click",event =>{
@@ -85,21 +85,25 @@ document
     };
     
     //---Local strage---
+
     //---Récupérer les keys et les values qui sont dans le local strage en convertissant aux objets Javascript---
     let kanapLocalstrage = JSON.parse(localStorage.getItem("kanapProduct"));
     
-    //---Function pour enregistrer un produit dans le local strage---
+    //---Function pour pousser des produits sélectionnés par l'utilisateur dans le local strage---
     const addLocalstrage = () => {
         kanapLocalstrage.push(selectUser);     
     };
+    //stocker la key "kanapProduct" et les values en convertissant au format Json---
     const storeLocalstrage = () =>{
-        localStorage.setItem("kanapProduct", JSON.stringify(kanapLocalstrage));//stocker la key "kanapProduct" et les values en convertissant au format Json
+        localStorage.setItem("kanapProduct", JSON.stringify(kanapLocalstrage));
     };
 
     //---S'il y a dejà des produits d'enregistré dans le local storage---
     if(kanapLocalstrage){
-        //---Si le produit identique est déja présent dans le panier ( même id + même couleur),on incrémente---
+
         let sameProduct = kanapLocalstrage.find( product => product.id === selectUser.id && product.color === selectUser.color);
+    
+        //---Si le produit identique est déja présent dans le panier ( même id + même couleur),on incrémente la quantité---        
         if (sameProduct != undefined ){
             sameProduct.quantity = Number(selectUser.quantity += sameProduct.quantity);
         }else {
