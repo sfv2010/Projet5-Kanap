@@ -15,14 +15,12 @@ const callApi = async () => {
  //---Insérer les produits dans la page d'acceuil (Affichage les 8 photos et les textes)---
  
 const displayProducts = async () => {
-    const result = await callApi();
-    //console.log(result);
-    for (let i = 0; i < result.length; i++) {
-        //---Créer des nouveaux éléments---
-        //---<a href>---
+    const kanaps = await callApi();
+
+    kanaps.forEach(kanap => {
         const productA = document.createElement("a");
         document.getElementById("items").appendChild(productA);
-        productA.href = `./product.html?id=${result[i]._id}`;
+        productA.href = `./product.html?id=${kanap._id}`;
 
         //---<article>---
         const productArticle = document.createElement("article");
@@ -31,60 +29,21 @@ const displayProducts = async () => {
         //---<img src alt>---
         const productImg = document.createElement("img");
         productArticle.appendChild(productImg);
-        productImg.src = result[i].imageUrl;
-        productImg.alt = result[i].altTxt;
+        productImg.src = kanap.imageUrl;
+        productImg.alt = kanap.altTxt;
 
         //---<h3 class = "productName">---
         const productH3 = document.createElement("h3");
         productArticle.appendChild(productH3);
         productH3.classList.add("productName");
-        productH3.innerText = result[i].name;
+        productH3.innerText = kanap.name;
 
         //---<p class = "productDescription">---
         const productP = document.createElement("p");
         productArticle.appendChild(productP);
         productP.classList.add("productDescription");
-        productP.innerText = result[i].description;
-    } 
+        productP.innerText = kanap.description;
+    })
 };
 
 displayProducts();
-
-
-
-// ---Récupérer les donnée par API ---
-//let kanapData;
-
-// const callApi = async() => {
-//     try{
-//       const res = await fetch("http://localhost:3000/api/products");
-//       kanapData = await res.json();
-//     }
-//     catch(err){
-//       document
-//       .getElementById("items")
-//       .innerText = " Erreur d'affichage - nous sommes désolés ";
-//     }
-//   }
-// callApi();
-
-// //---Insérer les produits dans la page d'acceuil (Affichage les 8 photos et les textes)---
-
-// const displayProducts = async() => {
-//     await callApi();
-
-//     document
-//     .getElementById("items")
-//     .innerHTML = kanapData.map(value =>
-    
-//       `<a href="./product.html?id=${value._id}">
-//           <article>
-//             <img src="${value.imageUrl}" alt="${value.altTxt}">
-//             <h3 class="productName">${value.name}</h3>
-//             <p class="productDescription">${value.description}</p>
-//           </article>
-//         </a>`
-//     )
-//   .join("");
-// };
-// displayProducts();
