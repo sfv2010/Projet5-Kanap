@@ -14,9 +14,9 @@ let kanapData;
 
 const callApi = async() => {
     try{
-        const res = await fetch("http://localhost:3000/api/products");
-        kanapData = await res.json();
-    }
+        const resProduct = await fetch("http://localhost:3000/api/products");
+        kanapData = await resProduct.json(); 
+        }
     catch(err){
       document
       .getElementById("cart__items")
@@ -26,23 +26,23 @@ const callApi = async() => {
  
 //---Récupérer les données manquant dans le local strage---
 const getPrice = async()=> {
-    try{
+    if(kanapLocalstrage){
         await callApi();
         kanapLocalstrage.forEach( canap => {
-            const tmp = kanapData.filter(element => element._id === canap.id);
-            const productLocalApi = {
-                ...canap, //---Syntaxe de décomposition. Récupération des données dans le local strage(en enlevant accolades)
-                price : tmp[0].price,//---Récupération des données dans l'APi---
-                imageUrl : tmp[0].imageUrl,
-                altTxt : tmp[0].altTxt
-            }
-            //console.table(productLocalApi);
-            kanapLocalstrageCopy.push(productLocalApi)
-        });
-    }catch(e){
+                    const tmp = kanapData.filter(element => element._id === canap.id);
+                    const productLocalApi = {
+                        ...canap, //---Syntaxe de décomposition. Récupération des données dans le local strage(en enlevant accolades)
+                        price : tmp[0].price,//---Récupération des données dans l'APi---
+                        imageUrl : tmp[0].imageUrl,
+                        altTxt : tmp[0].altTxt
+                    }
+                    //console.table(productLocalApi);
+                    kanapLocalstrageCopy.push(productLocalApi)
+                });
+    }else{
         document.querySelector("h1").innerText = "Votre panier est vide "
     };
-}
+};
 
 //---Function pour afficher des produits---
 const displayCart = async() => {
@@ -55,7 +55,7 @@ const displayCart = async() => {
     if (kanapLocalstrage == 0){
         return document.querySelector("h1").innerText = "Votre panier est vide ";
     }else {
-        const displayProductsCart = kanapLocalstrageCopy.map( product => {
+        const displayProductsCart = kanapLocalstrageCopy.forEach( product => {
         
             //---Créer des nouveaux éléments---
             //---<article>---
@@ -119,36 +119,36 @@ const displayCart = async() => {
             //---<input> la quantité--
             const cartInput = document.createElement("input");
             cartDivQantity.appendChild(cartInput);
-            cartInput.setAttribute("type", "number");
+            cartInput.type = "number";
             cartInput.className = "itemQuantity";
-            cartInput.setAttribute("name", "itemQuantity");
-            cartInput.setAttribute("min", "1");
-            cartInput.setAttribute("max", "100");
-            cartInput.setAttribute("value", product.quantity);
+            cartInput.name = "itemQuantity";
+            cartInput.min = "1";
+            cartInput.max = "100";
+            cartInput.value = product.quantity;
 
-            //--- modifier la quantité et afficher le montant total du panier---           
-            
+            //--- modifier la quantité et afficher le montant total du panier---                 
             quantityTotal += Number(product.quantity);
-            priceTotal += product.quantity * product.price;
+            priceTotal += Number(product.quantity * product.price);
             document.getElementById("totalQuantity").innerText = quantityTotal;
             document.getElementById("totalPrice").innerText = Number(priceTotal).toLocaleString("en") ;
  
             //---Function pour écouter si l'utilisateur modifie la quantité et enregistrer la nouvelle dans le localstrage
-            cartInput.addEventListener("change", function(event)  {
+            cartInput.addEventListener("change", event =>  {
                 event.preventDefault();   
-                product.quantity = cartInput.value;
-                if (product.quantity <= 0 || product.quantity > 100){
+                // product.quantity = cartInput.valueAsNumber;
+                if (cartInput.valueAsNumber <= 0 || cartInput.valueAsNumber > 100 || isNaN(cartInput.valueAsNumber)){
                     return alert ("Veuillez choisir une quantité entre 1 et 100"); 
                 } else {
+                    product.quantity = cartInput.valueAsNumber;
                     kanapLocalstrage.filter(element => {
                         if (element.id === product.id && element.color === product.color){
-                            element.quantity = product.quantity
+                            element.quantity = product.quantity;
                         }     
                     }); 
-                //---renvoyer la nouvelle quantité choisi dans le localstrage---  
+                    //---renvoyer la nouvelle quantité choisit dans le localstrage---  
                     storeLocalstrage();
-                    location.reload();
-                    console.log(product.quantity)
+                    //---Fonction qui recalcule les prix totaux et les quantités totales sans renouveler la pagee si le client change la quantité--- 
+                    displayQuantityPrice();
                 };
             });
 
@@ -165,82 +165,177 @@ const displayCart = async() => {
             //---supprimer les produits séléctioné lors de click---
             cartDeleteItem.addEventListener("click",event => {
                 event.preventDefault();
-
-                //---selectionner les élément à garder---
-                kanapLocalstrage = kanapLocalstrage.filter(element => element.id != product.id|| element.color != product.color);
-                console.log(kanapLocalstrage);
-          
-                //---renvoyer des produit qui reste dans le localstrage---
-                storeLocalstrage();
-                alert("Votre article a bien été supprimé de votre panier");
                 
-                //---renouveler la page pour effacer l'affichage du produit supprimé--
-                location.reload();
+                //---Fonction afficher la fenêtre confirmation de suppression---
+                const confirmeDelete = () => {
+                    // const confirmDelete = confirm("Êtes-vous sûr de vouloir supprimer?");
+                    if(confirm("Êtes-vous sûr de vouloir supprimer?")){
+                         //---selectionner les élément à garder---
+                        kanapLocalstrage = kanapLocalstrage.filter(element => element.id != product.id|| element.color != product.color);
+          
+                        //---renvoyer des produit qui reste dans le localstrage---
+                        storeLocalstrage();
+                        //---renouveler la page pour effacer l'affichage du produit supprimé--
+                        location.reload();
+                    };
+                };
+                confirmeDelete();
+
+                // displayQuantityPrice();
+                // document.querySelector("article").remove();
+                // document.getElementById("totalQuantity").remove();
+                // document.getElementById("totalPrice").remove();
+                // document.getElementById("totalQuantity").innerText = quantityTotal;
+                // document.getElementById("totalPrice").innerText = Number(priceTotal).toLocaleString("en") 
                   
             });
         });
         
      }
 };
-// console.log(kanapLocalstrageCopy);
 
 displayCart();
 
-
-// ---function pour afficher le montant total du panier----
- 
-// for (let i = 0; i < kanapLocalstrage.length; i++) {
-//     let priceInCart = kanapLocalstragecopie[i];
-//     console.log(priceInCart)
-// }
-
-
-//  const changeQantity = () => {
-//      const getQuantity = document.querySelectorall(".cart__item");
-
-//      getQuantity.forEach(element => {
-//          getQuantity.addEventListener("change",event => {
-//              let cartQantity = JSON.parse(localStorage.getItem("kanapProduct"));
-//              for ( let cart of cartQantity)
-//              if (getQuantity.id === cart.dataset.id && cart.dataset.color ===getQuantity.color
-//                 ){
-//                     getQuantity.quantity = event.target.value;
-//                     localStorage.kanapProduct = JSON.stringify(cartQantity);
-
-//                 }
-               
-//          })
-           
-//      })
-//  }
-// //     
-//     
-//         getQuantity.addEventListener("change",event => {
-//           for (article of kanapLocalstrage)
-//             if (
-//               artcle.id === cart.dataset.id && getQuantity.dataset.color === article.color
-
-//             ){
-//               article.quantity = element.target.value;
-//               storeLocalstrage();
+//---Fonction qui recalcule les prix totaux et quantités totales sans renouveler la page. 
+const displayQuantityPrice = () => {
+    let newQuantityTotal = 0;
+    let newPriceTotal = 0;
+    kanapLocalstrageCopy.forEach(kanap => {
+        newQuantityTotal += Number(kanap.quantity);
+        newPriceTotal += Number(kanap.quantity * kanap.price);
+    })
+    document.getElementById("totalQuantity").innerText = newQuantityTotal;
+    document.getElementById("totalPrice").innerText = Number(newPriceTotal).toLocaleString("en");
+}
 
 
-//             }
-//         })
-//     })
-// }
-//     ;
-//     userQuantity.forEach(plus => {
-//         plus.addEventListener("change",event => {
-//             event.preventDefault(); 
+//---Expressions régulières : RegExp---
+const patternEspace = new RegExp("\\S");
+const patternName = new RegExp("^[A-Za-z-àâäéèêëïîôöùûüç ,.'-]+$");
+const patternAddress = new RegExp("^[A-Za-z0-9-àâäéèêëïîôöùûüç ,.'-]+$")
+const patternEmail = new RegExp("^[a-zA-Z0-9_+-]+(.[a-zA-Z0-9_+-]+)*@([a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*\.)+[.]{1}[a-zA-Z]{2,}$");
 
-//             for (let i = 0; i < userQuantity.length; i++){  
-//                 if(userQuantity[i].id)
-//             }
-//         });
-          
-//           const findQuantity = kanapLocalstrage.find(element => element.quantity.valueAsNumber !== cartInput.value);
+
+//---Vérifier la validité d'un formulaire---
+
+//---Prénom---
+const checkFirstName = document.getElementById("firstName");
+const alertFirstName = document.getElementById("firstNameErrorMsg");
+checkFirstName.addEventListener("change",event => {
+    event.preventDefault();
+    if(!checkFirstName.value || !checkFirstName.value.match(patternEspace)){
+        alertFirstName.innerText = "Veuillez saisir votre nom";
+    }else if(patternName.test(checkFirstName.value)){
+             alertFirstName.innerText = "Merci";
+    }else {
+        alertFirstName.innerText = "Erreur. Veuillez saisir votre prénom correctement";
+    }
+});
+
+//---Nom---
+const checkLastName = document.getElementById("lastName");
+const alertLastName = document.getElementById("lastNameErrorMsg");
+checkLastName.addEventListener("change",event => {
+    event.preventDefault();
+    if(!checkLastName.value || !checkLastName.value.match(patternEspace)){
+        alertLastName.innerText = "Veuillez saisir votre nom";
+    }else if(patternName.test(checkLastName.value)){
+             alertLastName.innerText = "Merci";
+    }else {
+        alertLastName.innerText = "Erreur. Veuillez saisir votre nom correctement";
+    }
+});
+
+//---Adresse---
+const checkAddress = document.getElementById("address");
+const alertAddress = document.getElementById("addressErrorMsg");
+checkAddress.addEventListener("change",event => {
+    event.preventDefault();
+    if(!checkAddress.value || !checkAddress.value.match(patternEspace)){
+        alertAddress.innerText = "Veuillez saisir votre adressse";
+    }else if(patternAddress.test(checkAddress.value)){
+        alertAddress.innerText = "Merci";
+    }else {
+        alertAddress.innerText = "Erreur. Veuillez entrer votre adresse correctement"
+    }
+});
+
+//---Ville---
+const checkCity = document.getElementById("city");
+const alertCity = document.getElementById("cityErrorMsg");
+checkCity.addEventListener("change",event => {
+    event.preventDefault();
+    if(!checkCity.value || !checkCity.value.match(patternEspace)){
+        alertCity.innerText = "Veuillez saisir votre ville";
+    }else if(patternName.test(checkCity.value)){
+        alertCity.innerText = "Merci";
+    }else {
+        alertCity.innerText = "Erreur. Veuillez entrer votre ville correctement"
+    }
+});
+
+//--Email---
+const checkEmail = document.getElementById("email");
+const alertEmail = document.getElementById("emailErrorMsg");
+checkEmail.addEventListener("change",event => {
+    event.preventDefault();
+    if(!checkEmail.value || !checkEmail.value.match(patternEspace)){
+        alertEmail.innerText = "Veuillez saisir votre e-mail";
+    }else if(patternEmail.test(checkEmail.value)){
+      alertEmail.innerText = "Merci";
+    }else {
+        alertEmail.innerText = "Erreur. Veuillez entrer votre adresse mail correctement"
+    }
+});
+//---Récupération des valeurs du formulaire ---
+//---Validation des données
+// Pour les routes POST, l’objet contact envoyé au serveur doit contenir les champs firstName,
+// lastName, address, city et email. Le tableau des produits envoyé au back-end doit être un
+// array de strings product-ID. Les types de ces champs et leur présence doivent être validés
+// avant l’envoi des données au serveur.
+const sendButton = document.getElementById("order")
+.addEventListener("click",event => {
+    event.preventDefault();
+    if(!checkFirstName.value ||  !checkFirstName.value.match(patternEspace) || !patternName.test(checkFirstName.value) ||
+       !checkLastName.value || !checkLastName.value.match(patternEspace) || !patternName.test(checkLastName.value) ||
+       !checkAddress.value || !checkAddress.value.match(patternEspace) || !patternAddress.test(checkAddress.value) ||
+       !checkCity.value || !checkCity.value.match(patternEspace) || !patternName.test(checkCity.value) ||
+       !checkEmail.value || !checkEmail.value.match(patternEspace) || !patternEmail.test(checkEmail.value) ){
+        alert ("Veuillez renseigner correctement tous les champs");      
+    }else {
+        let buyProduct = [];
+        buyProduct.push(kanapLocalstrage);
+        
+        const orderKanap = {
+            contact : {
+                firstName : checkFirstName.value,
+                lastName : checkLastName.value,
+                address : checkAddress.value,
+                city : checkCity.value,
+                email : checkEmail.value
+            },
+            products : buyProduct
+        };
+        console.log(orderKanap);
+        const url = "http://localhost:3000/api/products/order";
+        const postForm = document.querySelector(".cart__order__form");
+        const formData = new FormData(postForm);
+        const options = {
+            method :"POST",
+            body : formData
+        };
+        fetch(url, postForm)
+        .then(response => {
+            if(response.ok){
+                return response.json();
+            } else {
+                return new Error();
+            }
+        })
+        .then(value => console.log(value))
+        .catch(error => console.error(error));
             
-//     };
-// };
-// localStorage.setItem("kanapProduct", JSON.stringify(kanapLocalstrage));
+        
+    };   
+
+})
