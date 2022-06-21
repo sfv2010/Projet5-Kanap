@@ -166,6 +166,8 @@ const displayCart = async() => {
             cartDeleteItem.addEventListener("click",event => {
                 event.preventDefault();
                 
+                const productdelete = cartDeleteItem.closest(".cart__item");
+                
                 //---Fonction afficher la fenêtre confirmation de suppression---
                 const confirmeDelete = () => {
                     // const confirmDelete = confirm("Êtes-vous sûr de vouloir supprimer?");
@@ -176,17 +178,10 @@ const displayCart = async() => {
                         //---renvoyer des produit qui reste dans le localstrage---
                         storeLocalstrage();
                         //---renouveler la page pour effacer l'affichage du produit supprimé--
-                        location.reload();
+                        productdelete.remove();
                     };
                 };
                 confirmeDelete();
-
-                // displayQuantityPrice();
-                // document.querySelector("article").remove();
-                // document.getElementById("totalQuantity").remove();
-                // document.getElementById("totalPrice").remove();
-                // document.getElementById("totalQuantity").innerText = quantityTotal;
-                // document.getElementById("totalPrice").innerText = Number(priceTotal).toLocaleString("en") 
                   
             });
         });
@@ -217,76 +212,42 @@ const patternEmail = new RegExp("^[a-zA-Z0-9_+-]+(.[a-zA-Z0-9_+-]+)*@([a-zA-Z0-9
 
 
 //---Vérifier la validité d'un formulaire---
-
+const testChamp = (input,alert,regex,text) => {
+    input.addEventListener("change",event => {
+        event.preventDefault();
+        if(!input.value || !input.value.match(patternEspace)){
+            alert.innerText = "Veuillez saisir votre " + text ;
+        }else if (!input.value.match(regex)){ 
+            alert.innerText = "Erreur. Veuillez saisir votre " + text + " correctement";
+        }else if(input.value.match(regex)){
+            alert.innerText = "";  
+        }      
+    });
+}
 //---Prénom---
 const checkFirstName = document.getElementById("firstName");
 const alertFirstName = document.getElementById("firstNameErrorMsg");
-checkFirstName.addEventListener("change",event => {
-    event.preventDefault();
-    if(!checkFirstName.value || !checkFirstName.value.match(patternEspace)){
-        alertFirstName.innerText = "Veuillez saisir votre nom";
-    }else if(patternName.test(checkFirstName.value)){
-             alertFirstName.innerText = "Merci";
-    }else {
-        alertFirstName.innerText = "Erreur. Veuillez saisir votre prénom correctement";
-    }
-});
-
 //---Nom---
 const checkLastName = document.getElementById("lastName");
 const alertLastName = document.getElementById("lastNameErrorMsg");
-checkLastName.addEventListener("change",event => {
-    event.preventDefault();
-    if(!checkLastName.value || !checkLastName.value.match(patternEspace)){
-        alertLastName.innerText = "Veuillez saisir votre nom";
-    }else if(patternName.test(checkLastName.value)){
-             alertLastName.innerText = "Merci";
-    }else {
-        alertLastName.innerText = "Erreur. Veuillez saisir votre nom correctement";
-    }
-});
-
-//---Adresse---
+ //---Adresse---
 const checkAddress = document.getElementById("address");
 const alertAddress = document.getElementById("addressErrorMsg");
-checkAddress.addEventListener("change",event => {
-    event.preventDefault();
-    if(!checkAddress.value || !checkAddress.value.match(patternEspace)){
-        alertAddress.innerText = "Veuillez saisir votre adressse";
-    }else if(patternAddress.test(checkAddress.value)){
-        alertAddress.innerText = "Merci";
-    }else {
-        alertAddress.innerText = "Erreur. Veuillez entrer votre adresse correctement"
-    }
-});
-
 //---Ville---
 const checkCity = document.getElementById("city");
 const alertCity = document.getElementById("cityErrorMsg");
-checkCity.addEventListener("change",event => {
-    event.preventDefault();
-    if(!checkCity.value || !checkCity.value.match(patternEspace)){
-        alertCity.innerText = "Veuillez saisir votre ville";
-    }else if(patternName.test(checkCity.value)){
-        alertCity.innerText = "Merci";
-    }else {
-        alertCity.innerText = "Erreur. Veuillez entrer votre ville correctement"
-    }
-});
-
 //--Email---
 const checkEmail = document.getElementById("email");
 const alertEmail = document.getElementById("emailErrorMsg");
-checkEmail.addEventListener("change",event => {
-    event.preventDefault();
-    if(!checkEmail.value || !checkEmail.value.match(patternEspace)){
-        alertEmail.innerText = "Veuillez saisir votre e-mail";
-    }else if(patternEmail.test(checkEmail.value)){
-      alertEmail.innerText = "Merci";
-    }else {
-        alertEmail.innerText = "Erreur. Veuillez entrer votre adresse mail correctement"
-    }
-});
+
+testChamp(checkFirstName,alertFirstName,patternName,"prénom");
+testChamp(checkLastName,alertLastName,patternName,"nom");
+testChamp(checkAddress,alertAddress,patternAddress,"adresse");
+testChamp(checkCity,alertCity,patternName,"ville");
+testChamp(checkEmail,alertEmail,patternEmail,"mail");
+
+
+
 //---Récupération des valeurs du formulaire ---
 //---Validation des données
 // Pour les routes POST, l’objet contact envoyé au serveur doit contenir les champs firstName,
@@ -323,6 +284,7 @@ const sendButton = document.getElementById("order")
             method : "POST",
             body : JSON.stringify(orderKanap),
             headers : {
+                "Accept" : "application/json",
                 "Content-Type" : "application/json"
             },
         };
