@@ -317,14 +317,17 @@ const sendButton = document.getElementById("order")
             products : buyProduct
         };
         console.log(orderKanap);
-        const url = "http://localhost:3000/api/products/order";
-        const postForm = document.querySelector(".cart__order__form");
-        const formData = new FormData(postForm);
+        //---Envoi de la requête POST au back-end---
+        // const formData = new FormData(postForm);
         const options = {
-            method :"POST",
-            body : formData
+            method : "POST",
+            body : JSON.stringify(orderKanap),
+            headers : {
+                "Content-Type" : "application/json"
+            },
         };
-        fetch(url, postForm)
+        
+        fetch("http://localhost:3000/api/products/order", options)
         .then(response => {
             if(response.ok){
                 return response.json();
