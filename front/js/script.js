@@ -8,7 +8,7 @@ const callApi = async () => {
     catch(err){
       document
       .getElementById("items")
-      .innerText = " Erreur d'affichage - nous sommes désolés ";
+      .textContent = " Erreur d'affichage - nous sommes désolés ";
     }
 };
 
@@ -36,13 +36,13 @@ const displayProducts = async () => {
         const productH3 = document.createElement("h3");
         productArticle.appendChild(productH3);
         productH3.classList.add("productName");
-        productH3.innerText = kanap.name;
+        productH3.textContent = kanap.name;
 
         //---<p class = "productDescription">---
         const productP = document.createElement("p");
         productArticle.appendChild(productP);
         productP.classList.add("productDescription");
-        productP.innerText = kanap.description;
+        productP.textContent = kanap.description;
     })
 };
 
