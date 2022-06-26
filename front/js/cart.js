@@ -269,8 +269,10 @@ const sendButton = document.getElementById("order")
        !checkEmail.value || !checkEmail.value.match(patternSpace) || !checkEmail.value.match(patternEmail) ){
         alert ("Veuillez renseigner correctement tous les champs");      
     }else {
-        let buyProduct = [];
-        buyProduct.push(kanapLocalstrage);
+        //---Récupération de l'id des produits choisi du local storage---
+        let productsId = [];
+        kanapLocalstrage.forEach(kanapLocalstrage => productsId.push(kanapLocalstrage.id));
+        //console.log(productsId);
         
         const orderKanap = {
             contact : {
@@ -280,7 +282,7 @@ const sendButton = document.getElementById("order")
                 city : checkCity.value,
                 email : checkEmail.value
             },
-            products : buyProduct
+            products : productsId
         };
         console.log(orderKanap);
         //---Envoi de la requête POST au back-end---
@@ -304,9 +306,7 @@ const sendButton = document.getElementById("order")
         })
         .then(value => {
             localStorage.clear();
-            console.log(value);
             localStorage.setItem("orderId", value.orderId);
-
             document.location.href = "confirmation.html";
         })
         .catch(error => console.error(error)); 
