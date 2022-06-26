@@ -2,23 +2,23 @@
 //---Récupération de la châne de requête dans l'url---
 const urlSearchParams = new URLSearchParams(location.search);
 const kanapId = urlSearchParams.get("id");
- console.log(kanapId); //aprés html?id=
+ //console.log(kanapId); //aprés html?id=
 
 //---Récupérer l'id du produit à afficher ---
 let kanapData;
 
 const getProductsById = async () => {
   try {
-    const res = await fetch(`http://localhost:3000/api/products/${kanapId}`);
-    kanapData = await res.json()
+    const resKanapId = await fetch(`http://localhost:3000/api/products/${kanapId}`);
+    kanapData = await resKanapId.json();
+    //console.log(kanapData);
   }
   catch(err){
     document
     .getElementsByClassName("item")
-    .innerText = " Erreur d'affichage - nous sommes désolés ";
+    .textContent = " Erreur d'affichage - nous sommes désolés ";
   }
 };
-getProductsById();
 
 //---Afficher un produit et ses détails dans la page Produit---
 
@@ -33,30 +33,27 @@ const displayproductsById = async () => {
 
     document
     .getElementById("title")
-    .innerText = kanapData.name;
+    .textContent = kanapData.name;
 
     document
     .getElementById("price")
-    .innerText = kanapData.price;
+    .textContent = kanapData.price;
 
     document
     .getElementById("description")
-    .innerText = kanapData.description;
+    .textContent = kanapData.description;
 
-    for (let i = 0; i < kanapData.colors.length; i++){
-    const productOption = document.createElement("option");
-    document.getElementById("colors").appendChild(productOption);
-    productOption.value = kanapData.colors[i];
-    productOption.innerText = kanapData.colors[i];
-    }
-    // .insertAdjacentHTML("beforeend", kanapData.colors.map(colors =>
-    // `<option value="${colors}">${colors}</option>`));
+    kanapData.colors.forEach(color => {
+        let productOption = document.createElement("option");
+        document.getElementById("colors").appendChild(productOption);
+        productOption.value = color;
+        productOption.textContent = color;
+    })
    };
 
 displayproductsById();
 
 // ---Ajouter des produits dans le panier---
-
 // ---Récupération des données sélectionnées par l'utilisateur---
 document
 .getElementById("addToCart")
