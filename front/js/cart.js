@@ -20,7 +20,7 @@ const callApi = async() => {
     catch(err){
       document
       .getElementById("cart__items")
-      .innerText = " Erreur d'affichage - nous sommes désolés ";
+      .textContent = " Erreur d'affichage - nous sommes désolés ";
     };
 };
  
@@ -40,7 +40,7 @@ const getPrice = async()=> {
                     kanapLocalstrageCopy.push(productLocalApi)
                 });
     }else{
-        document.querySelector("h1").innerText = "Votre panier est vide "
+        document.querySelector("h1").textContent = "Votre panier est vide "
     };
 };
 
@@ -53,7 +53,7 @@ const displayCart = async() => {
     let priceTotal = 0;
     
     if (kanapLocalstrage == 0){
-        return document.querySelector("h1").innerText = "Votre panier est vide ";
+        return document.querySelector("h1").textContent = "Votre panier est vide ";
     }else {
         const displayProductsCart = kanapLocalstrageCopy.forEach( product => {
         
@@ -89,17 +89,17 @@ const displayCart = async() => {
             //---<h2> afficher le nom de canapé---
             const cartH2 = document.createElement("h2");
             cartDivDescription.appendChild(cartH2);
-            cartH2.innerText = product.name;
+            cartH2.textContent = product.name;
             
             //---<p>  afficher la couleur---
             const cartColor = document.createElement("p");
             cartDivDescription.appendChild(cartColor);
-            cartColor.innerText = product.color;
+            cartColor.textContent = product.color;
             
             //---<p>  afficher le prix---
             const cartPrice = document.createElement("p");
             cartDivDescription.appendChild(cartPrice);
-            cartPrice.innerText = Number(product.price).toLocaleString("en") + " €";//pour insérer une ","
+            cartPrice.textContent = Number(product.price).toLocaleString("en") + " €";//pour insérer une ","
             
             //---<div>---
             const cartDivSetting = document.createElement("div");
@@ -114,7 +114,7 @@ const displayCart = async() => {
             //---<p> afficher la Qté : ---
             const cartQantity = document.createElement("p");
             cartDivQantity.appendChild(cartQantity);
-            cartQantity.innerText = "Qté : "
+            cartQantity.textContent = "Qté : "
             
             //---<input> la quantité--
             const cartInput = document.createElement("input");
@@ -129,8 +129,8 @@ const displayCart = async() => {
             //--- modifier la quantité et afficher le montant total du panier---                 
             quantityTotal += Number(product.quantity);
             priceTotal += Number(product.quantity * product.price);
-            document.getElementById("totalQuantity").innerText = quantityTotal;
-            document.getElementById("totalPrice").innerText = Number(priceTotal).toLocaleString("en") ;
+            document.getElementById("totalQuantity").textContent = quantityTotal;
+            document.getElementById("totalPrice").textContent = Number(priceTotal).toLocaleString("en") ;
  
             //---Function pour écouter si l'utilisateur modifie la quantité et enregistrer la nouvelle dans le localstrage
             cartInput.addEventListener("change", event =>  {
@@ -161,31 +161,30 @@ const displayCart = async() => {
             const cartDeleteItem = document.createElement("p");
             cartDivDelete.appendChild(cartDeleteItem);
             cartDeleteItem.className = "deleteItem";
-            cartDeleteItem.innerText = "Supprimer";        
+            cartDeleteItem.textContent = "Supprimer";        
             //---supprimer les produits séléctioné lors de click---
             cartDeleteItem.addEventListener("click",event => {
                 event.preventDefault();
                 
-                const productdelete = cartDeleteItem.closest(".cart__item");
+                const productDelete = cartDeleteItem.closest(".cart__item");
                 
                 //---Fonction afficher la fenêtre confirmation de suppression---
                 const confirmeDelete = () => {
                     // const confirmDelete = confirm("Êtes-vous sûr de vouloir supprimer?");
                     if(confirm("Êtes-vous sûr de vouloir supprimer?")){
-                         //---selectionner les élément à garder---
+                        //---selectionner les élément à garder---
                         kanapLocalstrage = kanapLocalstrage.filter(element => element.id != product.id|| element.color != product.color);
-          
-                        //---renvoyer des produit qui reste dans le localstrage---
+                        kanapLocalstrageCopy = kanapLocalstrageCopy.filter(element => element.id != product.id || element.color != product.color);
+                        //---renvoyer des produit qui restent dans le localstrage---
                         storeLocalstrage();
-                        //---renouveler la page pour effacer l'affichage du produit supprimé--
-                        productdelete.remove();
+                        //--- Effacer l'affichage du produit supprimé--
+                        productDelete.remove();
+                        displayQuantityPrice();
                     };
                 };
-                confirmeDelete();
-                  
+                confirmeDelete();                 
             });
-        });
-        
+        });  
      }
 };
 
@@ -199,54 +198,60 @@ const displayQuantityPrice = () => {
         newQuantityTotal += Number(kanap.quantity);
         newPriceTotal += Number(kanap.quantity * kanap.price);
     })
-    document.getElementById("totalQuantity").innerText = newQuantityTotal;
-    document.getElementById("totalPrice").innerText = Number(newPriceTotal).toLocaleString("en");
+    document.getElementById("totalQuantity").textContent = newQuantityTotal;
+    document.getElementById("totalPrice").textContent = Number(newPriceTotal).toLocaleString("en");
 }
 
 
 //---Expressions régulières : RegExp---
-const patternEspace = new RegExp("\\S");
+const patternSpace = new RegExp("\\S");
 const patternName = new RegExp("^[A-Za-z-àâäéèêëïîôöùûüç ,.'-]+$");
 const patternAddress = new RegExp("^[A-Za-z0-9-àâäéèêëïîôöùûüç ,.'-]+$")
 const patternEmail = new RegExp("^[a-zA-Z0-9_+-]+(.[a-zA-Z0-9_+-]+)*@([a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*\.)+[.]{1}[a-zA-Z]{2,}$");
 
-
-//---Vérifier la validité d'un formulaire---
-const testChamp = (input,alert,regex,text) => {
-    input.addEventListener("change",event => {
+//---Function pour vérifier la validité d'un formulaire---
+const testForm = (check,alert,regex,text) => {
+    check.addEventListener("change",event => {
         event.preventDefault();
-        if(!input.value || !input.value.match(patternEspace)){
-            alert.innerText = "Veuillez saisir votre " + text ;
-        }else if (!input.value.match(regex)){ 
-            alert.innerText = "Erreur. Veuillez saisir votre " + text + " correctement";
-        }else if(input.value.match(regex)){
-            alert.innerText = "";  
+        if(!check.value || !check.value.match(patternSpace)){
+            alert.textContent = "Veuillez saisir votre " + text ;
+        }else if (check.value.match(regex)){ 
+            alert.textContent = "";          
+        }else {
+            alert.textContent = "Erreur. Veuillez saisir votre " + text + " correctement";       
         }      
     });
-}
+};
+// checkFirstName.addEventListener("change",event => {
+//     event.preventDefault();
+//     if(!checkFirstName.value || !checkFirstName.value.match(patternSpace)){
+//         alertFirstName.textContent = "Veuillez saisir votre nom";
+//     }else if(patternName.test(checkFirstName.value)){
+//              alertFirstName.textContent = "Merci";
+//     }else {
+//         alertFirstName.textContent = "Erreur. Veuillez saisir votre prénom correctement";
+//     }
+// });
 //---Prénom---
 const checkFirstName = document.getElementById("firstName");
 const alertFirstName = document.getElementById("firstNameErrorMsg");
+testForm(checkFirstName,alertFirstName,patternName,"prénom");
 //---Nom---
 const checkLastName = document.getElementById("lastName");
 const alertLastName = document.getElementById("lastNameErrorMsg");
+testForm(checkLastName,alertLastName,patternName,"nom");
  //---Adresse---
 const checkAddress = document.getElementById("address");
 const alertAddress = document.getElementById("addressErrorMsg");
+testForm(checkAddress,alertAddress,patternAddress,"adresse");
 //---Ville---
 const checkCity = document.getElementById("city");
 const alertCity = document.getElementById("cityErrorMsg");
+testForm(checkCity,alertCity,patternName,"ville");
 //--Email---
 const checkEmail = document.getElementById("email");
 const alertEmail = document.getElementById("emailErrorMsg");
-
-testChamp(checkFirstName,alertFirstName,patternName,"prénom");
-testChamp(checkLastName,alertLastName,patternName,"nom");
-testChamp(checkAddress,alertAddress,patternAddress,"adresse");
-testChamp(checkCity,alertCity,patternName,"ville");
-testChamp(checkEmail,alertEmail,patternEmail,"mail");
-
-
+testForm(checkEmail,alertEmail,patternEmail,"adresse mail");
 
 //---Récupération des valeurs du formulaire ---
 //---Validation des données
@@ -257,11 +262,11 @@ testChamp(checkEmail,alertEmail,patternEmail,"mail");
 const sendButton = document.getElementById("order")
 .addEventListener("click",event => {
     event.preventDefault();
-    if(!checkFirstName.value ||  !checkFirstName.value.match(patternEspace) || !patternName.test(checkFirstName.value) ||
-       !checkLastName.value || !checkLastName.value.match(patternEspace) || !patternName.test(checkLastName.value) ||
-       !checkAddress.value || !checkAddress.value.match(patternEspace) || !patternAddress.test(checkAddress.value) ||
-       !checkCity.value || !checkCity.value.match(patternEspace) || !patternName.test(checkCity.value) ||
-       !checkEmail.value || !checkEmail.value.match(patternEspace) || !patternEmail.test(checkEmail.value) ){
+    if(!checkFirstName.value ||  !checkFirstName.value.match(patternSpace) || !checkFirstName.value.match(patternName) ||
+       !checkLastName.value || !checkLastName.value.match(patternSpace) || !checkLastName.value.match(patternName) ||
+       !checkAddress.value || !checkAddress.value.match(patternSpace) || !checkFirstName.value.match(patternAddress) ||
+       !checkCity.value || !checkCity.value.match(patternSpace) || !checkCity.value.match(patternName) ||
+       !checkEmail.value || !checkEmail.value.match(patternSpace) || !checkEmail.value.match(patternEmail) ){
         alert ("Veuillez renseigner correctement tous les champs");      
     }else {
         let buyProduct = [];
@@ -297,10 +302,13 @@ const sendButton = document.getElementById("order")
                 return new Error();
             }
         })
-        .then(value => console.log(value))
-        .catch(error => console.error(error));
-            
-        
-    };   
+        .then(value => {
+            localStorage.clear();
+            console.log(value);
+            localStorage.setItem("orderId", value.orderId);
 
-})
+            document.location.href = "confirmation.html";
+        })
+        .catch(error => console.error(error)); 
+    };   
+});
