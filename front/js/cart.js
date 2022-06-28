@@ -55,7 +55,7 @@ const displayCart = async() => {
     if (kanapLocalstrage == 0){
         return document.querySelector("h1").textContent = "Votre panier est vide ";
     }else {
-        const displayProductsCart = kanapLocalstrageCopy.forEach( product => {
+        kanapLocalstrageCopy.forEach(product => {
         
             //---Créer des nouveaux éléments---
             //---<article>---
@@ -63,7 +63,7 @@ const displayCart = async() => {
             document.getElementById("cart__items").appendChild(cartArticle);
             cartArticle.className = "cart__item";
             cartArticle.setAttribute("data-id" , product.id);
-            cartArticle.setAttribute("data-color",  product.color);
+            cartArticle.setAttribute("data-color", product.color);
 
             //---<div>---
             const cartDivImg = document.createElement("div");
@@ -99,7 +99,7 @@ const displayCart = async() => {
             //---<p>  afficher le prix---
             const cartPrice = document.createElement("p");
             cartDivDescription.appendChild(cartPrice);
-            cartPrice.textContent = Number(product.price).toLocaleString("en") + " €";//pour insérer une ","
+            cartPrice.textContent = Number(product.price).toLocaleString("en") + " €";//---pour insérer une "," dans le prix---
             
             //---<div>---
             const cartDivSetting = document.createElement("div");
@@ -137,6 +137,7 @@ const displayCart = async() => {
                 event.preventDefault();   
                 // product.quantity = cartInput.valueAsNumber;
                 if (cartInput.valueAsNumber <= 0 || cartInput.valueAsNumber > 100 || isNaN(cartInput.valueAsNumber)){
+                    cartInput.value = 1;
                     return alert ("Veuillez choisir une quantité entre 1 et 100"); 
                 } else {
                     product.quantity = cartInput.valueAsNumber;
@@ -164,10 +165,8 @@ const displayCart = async() => {
             cartDeleteItem.textContent = "Supprimer";        
             //---supprimer les produits séléctioné lors de click---
             cartDeleteItem.addEventListener("click",event => {
-                event.preventDefault();
-                
+                event.preventDefault();     
                 const productDelete = cartDeleteItem.closest(".cart__item");
-                
                 //---Fonction afficher la fenêtre confirmation de suppression---
                 const confirmeDelete = () => {
                     // const confirmDelete = confirm("Êtes-vous sûr de vouloir supprimer?");
@@ -197,16 +196,15 @@ const displayQuantityPrice = () => {
     kanapLocalstrageCopy.forEach(kanap => {
         newQuantityTotal += Number(kanap.quantity);
         newPriceTotal += Number(kanap.quantity * kanap.price);
-    })
+    });
     document.getElementById("totalQuantity").textContent = newQuantityTotal;
     document.getElementById("totalPrice").textContent = Number(newPriceTotal).toLocaleString("en");
 }
 
-
 //---Expressions régulières : RegExp---
 const patternSpace = new RegExp("\\S");
 const patternName = new RegExp("^[A-Za-z-àâäéèêëïîôöùûüç ,.'-]+$");
-const patternAddress = new RegExp("^[A-Za-z0-9-àâäéèêëïîôöùûüç ,.'-]+$")
+const patternAddress = new RegExp("^[A-Za-z0-9-àâäéèêëïîôöùûüç ,.'-]+$");
 const patternEmail = new RegExp("^[a-zA-Z0-9_+-]+(.[a-zA-Z0-9_+-]+)*@([a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*\.)+[.]{1}[a-zA-Z]{2,}$");
 
 //---Function pour vérifier la validité d'un formulaire---
@@ -222,16 +220,6 @@ const testForm = (check,alert,regex,text) => {
         }      
     });
 };
-// checkFirstName.addEventListener("change",event => {
-//     event.preventDefault();
-//     if(!checkFirstName.value || !checkFirstName.value.match(patternSpace)){
-//         alertFirstName.textContent = "Veuillez saisir votre nom";
-//     }else if(patternName.test(checkFirstName.value)){
-//              alertFirstName.textContent = "Merci";
-//     }else {
-//         alertFirstName.textContent = "Erreur. Veuillez saisir votre prénom correctement";
-//     }
-// });
 //---Prénom---
 const checkFirstName = document.getElementById("firstName");
 const alertFirstName = document.getElementById("firstNameErrorMsg");
@@ -253,27 +241,22 @@ const checkEmail = document.getElementById("email");
 const alertEmail = document.getElementById("emailErrorMsg");
 testForm(checkEmail,alertEmail,patternEmail,"adresse mail");
 
-//---Récupération des valeurs du formulaire ---
 //---Validation des données
-// Pour les routes POST, l’objet contact envoyé au serveur doit contenir les champs firstName,
-// lastName, address, city et email. Le tableau des produits envoyé au back-end doit être un
-// array de strings product-ID. Les types de ces champs et leur présence doivent être validés
-// avant l’envoi des données au serveur.
-const sendButton = document.getElementById("order")
-.addEventListener("click",event => {
+const sendButton = document.getElementById("order").addEventListener("click",event => {
     event.preventDefault();
     if(!checkFirstName.value ||  !checkFirstName.value.match(patternSpace) || !checkFirstName.value.match(patternName) ||
        !checkLastName.value || !checkLastName.value.match(patternSpace) || !checkLastName.value.match(patternName) ||
        !checkAddress.value || !checkAddress.value.match(patternSpace) || !checkFirstName.value.match(patternAddress) ||
        !checkCity.value || !checkCity.value.match(patternSpace) || !checkCity.value.match(patternName) ||
-       !checkEmail.value || !checkEmail.value.match(patternSpace) || !checkEmail.value.match(patternEmail) ){
+       !checkEmail.value || !checkEmail.value.match(patternSpace) || !checkEmail.value.match(patternEmail)){
         alert ("Veuillez renseigner correctement tous les champs");      
     }else {
         //---Récupération de l'id des produits choisi du local storage---
         let productsId = [];
-        kanapLocalstrage.forEach(kanapLocalstrage => productsId.push(kanapLocalstrage.id));
+        kanapLocalstrage.map(kanapLs => productsId.push(kanapLs.id));
         //console.log(productsId);
         
+        //---Récupération des valeurs du formulaire + id---
         const orderKanap = {
             contact : {
                 firstName : checkFirstName.value,
@@ -284,9 +267,8 @@ const sendButton = document.getElementById("order")
             },
             products : productsId
         };
-        console.log(orderKanap);
+        
         //---Envoi de la requête POST au back-end---
-        // const formData = new FormData(postForm);
         const options = {
             method : "POST",
             body : JSON.stringify(orderKanap),
@@ -295,20 +277,17 @@ const sendButton = document.getElementById("order")
                 "Content-Type" : "application/json"
             },
         };
-        
-        fetch("http://localhost:3000/api/products/order", options)
-        .then(response => {
-            if(response.ok){
-                return response.json();
-            } else {
-                return new Error();
+        const fetchCart = async () => {
+            try {
+              const response = await fetch("http://localhost:3000/api/products/order", options);
+              const data = await response.json();
+              localStorage.clear();
+              document.location.href = "confirmation.html?orderId=" + data.orderId;
             }
-        })
-        .then(value => {
-            localStorage.clear();
-            localStorage.setItem("orderId", value.orderId);
-            document.location.href = "confirmation.html";
-        })
-        .catch(error => console.error(error)); 
+            catch(err){
+              console.log("Oh error!!");
+            }
+        };
+        fetchCart();
     };   
 });
