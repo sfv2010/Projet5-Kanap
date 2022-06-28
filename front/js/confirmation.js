@@ -1,5 +1,4 @@
-const orderId = document.getElementById("orderId")
-.textContent = localStorage.getItem("orderId");
-console.log(orderId);
+const urlSearchParams = new URLSearchParams(location.search);
+const orderId = urlSearchParams.get("orderId");
 
-localStorage.clear();
+document.getElementById("orderId").textContent = orderId;
