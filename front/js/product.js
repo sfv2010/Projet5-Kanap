@@ -1,8 +1,7 @@
 //---Faire le lien entre un produit de la page d'acceuil et la page produit---
 //---Récupération de la châne de requête dans l'url---
 const urlSearchParams = new URLSearchParams(location.search);
-const kanapId = urlSearchParams.get("id");
- //console.log(kanapId); //aprés html?id=
+const kanapId = urlSearchParams.get("id"); //---Récuperation aprés html?id=
 
 //---Récupérer l'id du produit à afficher ---
 let kanapData;
@@ -50,7 +49,6 @@ const displayproductsById = async () => {
         productOption.textContent = color;
     })
    };
-
 displayproductsById();
 
 // ---Ajouter des produits dans le panier---
