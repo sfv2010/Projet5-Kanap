@@ -10,7 +10,6 @@ const getProductsById = async () => {
   try {
     const resKanapId = await fetch(`http://localhost:3000/api/products/${kanapId}`);
     kanapData = await resKanapId.json();
-    //console.log(kanapData);
   }
   catch(err){
     document
@@ -88,7 +87,7 @@ document
     const addLocalstrage = () => {
         kanapLocalstrage.push(selectUser);     
     };
-    //stocker la key "kanapProduct" et les values en convertissant au format Json---
+    //---Stocker la key "kanapProduct" et les values en convertissant au format Json---
     const storeLocalstrage = () =>{
         localStorage.setItem("kanapProduct", JSON.stringify(kanapLocalstrage));
     };
