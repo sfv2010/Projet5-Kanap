@@ -6,10 +6,10 @@ let storeLocalstrage = () =>{
   localStorage.setItem("kanapProduct", JSON.stringify(kanapLocalstrage));//stocker la key "kanapProduct" et les values en convertissant au format Json
 };
 
-//---Déclaration de variable pour récupérer les données manquant dans le local strage---
-let kanapLocalstrageCopy= [];
+//---Déclaration de variable avec tableau pour récupérer les données manquant dans le local strage---
+let kanapLocalstrageCopy = [];
 
-//---Récupérer les données par API
+//---Déclaration de variable pour récupérer les données par API
 let kanapData;
 
 const callApi = async() => {
@@ -45,6 +45,7 @@ const getPrice = async()=> {
 };
 
 //---Function pour afficher des produits---
+let cartInput; //Déclaration de variable pour utiliser lors de la validation de la commande---
 const displayCart = async() => {
     await getPrice();
 
@@ -117,7 +118,7 @@ const displayCart = async() => {
             cartQantity.textContent = "Qté : "
             
             //---<input> la quantité--
-            const cartInput = document.createElement("input");
+            cartInput = document.createElement("input");
             cartDivQantity.appendChild(cartInput);
             cartInput.type = "number";
             cartInput.className = "itemQuantity";
@@ -137,7 +138,6 @@ const displayCart = async() => {
                 event.preventDefault();   
                 // product.quantity = cartInput.valueAsNumber;
                 if (cartInput.valueAsNumber <= 0 || cartInput.valueAsNumber > 100 || isNaN(cartInput.valueAsNumber)){
-                    cartInput.value = 1;
                     return alert ("Veuillez choisir une quantité entre 1 et 100"); 
                 } else {
                     product.quantity = cartInput.valueAsNumber;
@@ -249,7 +249,9 @@ const sendButton = document.getElementById("order").addEventListener("click",eve
        !checkAddress.value || !checkAddress.value.match(patternSpace) || !checkFirstName.value.match(patternAddress) ||
        !checkCity.value || !checkCity.value.match(patternSpace) || !checkCity.value.match(patternName) ||
        !checkEmail.value || !checkEmail.value.match(patternSpace) || !checkEmail.value.match(patternEmail)){
-        alert ("Veuillez renseigner correctement tous les champs");      
+        return alert ("Veuillez renseigner correctement tous les champs");    
+    }else if(cartInput.valueAsNumber <= 0 || cartInput.valueAsNumber > 100 || isNaN(cartInput.valueAsNumber)) { 
+        return alert ("Veuillez choisir une quantité entre 1 et 100");     
     }else {
         //---Récupération de l'id des produits choisi du local storage---
         let productsId = [];
