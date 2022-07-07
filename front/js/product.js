@@ -1,7 +1,7 @@
 //---Faire le lien entre un produit de la page d'acceuil et la page produit---
 //---Récupération de la châne de requête dans l'url---
-const urlSearchParams = new URLSearchParams(location.search);
-const kanapId = urlSearchParams.get("id"); //---Récuperation aprés html?id=
+const urlSearchParams = new URLSearchParams(location.search);//---pour obtenir la partie requête de l'URL,aprés "?"
+const kanapId = urlSearchParams.get("id"); //---Récuperation aprés id=(Retourne la première valeur associée au paramètre de recherche donné.)
 
 //---Récupérer l'id du produit à afficher ---
 let kanapData;
@@ -57,7 +57,6 @@ document
 .addEventListener("click",event =>{
     event.preventDefault();
     const selectUser = {
-        name:kanapData.name,
         id: kanapId,
         color: document.getElementById('colors').value,
         quantity: document.getElementById('quantity').valueAsNumber
@@ -74,7 +73,7 @@ document
         return alert ("Veuillez choisir une quantité entre 1 et 100"); 
                 
     } else { //---Confirlation d'ajouter au panier---  
-        alert (`Merci, vous avez ajouté ${selectUser.quantity} ${selectUser.name} ${selectUser.color}  à votre panier ! `)
+        alert (`Merci, vous avez ajouté ${selectUser.quantity} ${kanapData.name} ${selectUser.color}  à votre panier ! `)
         location.href= "cart.html" ;
     };
     

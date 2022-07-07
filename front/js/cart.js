@@ -32,11 +32,11 @@ const getPrice = async()=> {
                     const tmp = kanapData.filter(element => element._id === canap.id);
                     const productLocalApi = {
                         ...canap, //---Syntaxe de décomposition. Récupération des données dans le local strage(en enlevant accolades)
-                        price : tmp[0].price,//---Récupération des données dans l'APi---
+                        name : tmp[0].name,//---Récupération des données dans l'APi---
+                        price : tmp[0].price,
                         imageUrl : tmp[0].imageUrl,
                         altTxt : tmp[0].altTxt
                     }
-                    //console.table(productLocalApi);
                     kanapLocalstrageCopy.push(productLocalApi)
                 });
     }else{
@@ -55,7 +55,7 @@ const displayCart = async() => {
     if (kanapLocalstrage == 0){
         return document.querySelector("h1").textContent = "Votre panier est vide ";
     }else {
-        kanapLocalstrageCopy.map(product => {
+        kanapLocalstrageCopy.forEach(product => {
         
             //---Créer des nouveaux éléments---
             //---<article>---
@@ -200,7 +200,7 @@ const displayQuantityPrice = () => {
     document.getElementById("totalPrice").textContent = Number(newPriceTotal).toLocaleString("en");
 }
 
-//---Expressions régulières : RegExp---
+//---Expressions régulières : RegExp (Comme il ne faut jamais faire confiance à l'utilisateur)---
 const patternSpace = new RegExp("\\S");
 const patternName = new RegExp("^[A-Za-z-àâäéèêëïîôöùûüç ,.'-]+$");
 const patternAddress = new RegExp("^[A-Za-z0-9-àâäéèêëïîôöùûüç ,.'-]+$");
@@ -269,15 +269,15 @@ const sendButton = document.getElementById("order").addEventListener("click",eve
         //---Envoi de la requête POST au back-end---
         const options = {
             method : "POST",
-            body : JSON.stringify(orderKanap),
-            headers : {
+            body : JSON.stringify(orderKanap),//transformer l' objet JavaScript en JSON
+            headers : { // 'pour envoyer du JSON à notre service web, il faut le prévenir qu'il va recevoir du JSON.grâce aux headers, envoyés en même temps que la requête.
                 "Accept" : "application/json",
                 "Content-Type" : "application/json"
             },
         };
         const fetchCart = async () => {
             try {
-              const response = await fetch("http://localhost:3000/api/products/order", options);
+              const response = await fetch("http://localhost:3000/api/products/order", options);//passer le contenu à envoyer au service web à notre fonction  fetch()
               const data = await response.json();
               localStorage.clear();
               document.location.href = "confirmation.html?orderId=" + data.orderId;

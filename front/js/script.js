@@ -2,8 +2,8 @@
 
 const callApi = async () => {
     try {
-      const products = await fetch("http://localhost:3000/api/products");
-      return products.json();
+      const products = await fetch("http://localhost:3000/api/products");//Le type de requête est GET (par défaut avec Fetch) car nous voulons récupérer les données.
+      return products.json();//pour récupérer le résultat de la requête au format json converti et crée un objet JavaScript.
     }
     catch(err){
       document
