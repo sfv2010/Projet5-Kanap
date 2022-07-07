@@ -247,7 +247,8 @@ const sendButton = document.getElementById("order").addEventListener("click",eve
        !checkLastName.value || !checkLastName.value.match(patternSpace) || !checkLastName.value.match(patternName) ||
        !checkAddress.value || !checkAddress.value.match(patternSpace) || !checkFirstName.value.match(patternAddress) ||
        !checkCity.value || !checkCity.value.match(patternSpace) || !checkCity.value.match(patternName) ||
-       !checkEmail.value || !checkEmail.value.match(patternSpace) || !checkEmail.value.match(patternEmail)){
+       !checkEmail.value || !checkEmail.value.match(patternSpace) || !checkEmail.value.match(patternEmail)||
+       !kanapLocalstrage || kanapLocalstrage == 0){
         return alert ("Veuillez renseigner correctement tous les champs");      
     }else {
         //---Récupération de l'id des produits choisi du local storage---
