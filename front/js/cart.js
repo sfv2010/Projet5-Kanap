@@ -249,7 +249,10 @@ const sendButton = document.getElementById("order").addEventListener("click",eve
        !checkAddress.value || !checkAddress.value.match(patternSpace) || !checkFirstName.value.match(patternAddress) ||
        !checkCity.value || !checkCity.value.match(patternSpace) || !checkCity.value.match(patternName) ||
        !checkEmail.value || !checkEmail.value.match(patternSpace) || !checkEmail.value.match(patternEmail) ||
-       !kanapLocalstrage || kanapLocalstrage == 0){
+       !kanapLocalstrage || kanapLocalstrage == null || kanapLocalstrage.length == 0){
+            if (!kanapLocalstrage || kanapLocalstrage == null || kanapLocalstrage.length == 0){
+                return alert ("Vous n'avez aucun produit dans le panier")
+            }
         return alert ("Veuillez renseigner correctement tous les champs");      
     }else {
         //---Récupération de l'id des produits choisi du local storage---
