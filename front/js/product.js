@@ -1,7 +1,7 @@
 //---Faire le lien entre un produit de la page d'acceuil et la page produit---
 //---Récupération de la châne de requête dans l'url---
-const urlSearchParams = new URLSearchParams(location.search);//---pour obtenir la partie requête de l'URL,aprés "?"
-const kanapId = urlSearchParams.get("id"); //---Récuperation aprés id=(Retourne la première valeur associée au paramètre de recherche donné.)
+const urlSearchParams = new URLSearchParams(location.search);
+const kanapId = urlSearchParams.get("id"); //---Récuperation aprés html?id=
 
 //---Récupérer l'id du produit à afficher ---
 let kanapData;

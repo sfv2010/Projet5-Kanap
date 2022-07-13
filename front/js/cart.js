@@ -32,11 +32,12 @@ const getPrice = async()=> {
                     const tmp = kanapData.filter(element => element._id === canap.id);
                     const productLocalApi = {
                         ...canap, //---Syntaxe de décomposition. Récupération des données dans le local strage(en enlevant accolades)
-                        name : tmp[0].name,//---Récupération des données dans l'APi---
-                        price : tmp[0].price,
+                        name : tmp[0].name,
+                        price : tmp[0].price,//---Récupération des données dans l'APi---
                         imageUrl : tmp[0].imageUrl,
                         altTxt : tmp[0].altTxt
                     }
+                    //console.table(productLocalApi);
                     kanapLocalstrageCopy.push(productLocalApi)
                 });
     }else{
@@ -200,7 +201,7 @@ const displayQuantityPrice = () => {
     document.getElementById("totalPrice").textContent = Number(newPriceTotal).toLocaleString("en");
 }
 
-//---Expressions régulières : RegExp (Comme il ne faut jamais faire confiance à l'utilisateur)---
+//---Expressions régulières : RegExp---
 const patternSpace = new RegExp("\\S");
 const patternName = new RegExp("^[A-Za-z-àâäéèêëïîôöùûüç ,.'-]+$");
 const patternAddress = new RegExp("^[A-Za-z0-9-àâäéèêëïîôöùûüç ,.'-]+$");
@@ -247,7 +248,7 @@ const sendButton = document.getElementById("order").addEventListener("click",eve
        !checkLastName.value || !checkLastName.value.match(patternSpace) || !checkLastName.value.match(patternName) ||
        !checkAddress.value || !checkAddress.value.match(patternSpace) || !checkFirstName.value.match(patternAddress) ||
        !checkCity.value || !checkCity.value.match(patternSpace) || !checkCity.value.match(patternName) ||
-       !checkEmail.value || !checkEmail.value.match(patternSpace) || !checkEmail.value.match(patternEmail)||
+       !checkEmail.value || !checkEmail.value.match(patternSpace) || !checkEmail.value.match(patternEmail) ||
        !kanapLocalstrage || kanapLocalstrage == 0){
         return alert ("Veuillez renseigner correctement tous les champs");      
     }else {
@@ -270,15 +271,15 @@ const sendButton = document.getElementById("order").addEventListener("click",eve
         //---Envoi de la requête POST au back-end---
         const options = {
             method : "POST",
-            body : JSON.stringify(orderKanap),//transformer l' objet JavaScript en JSON
-            headers : { // 'pour envoyer du JSON à notre service web, il faut le prévenir qu'il va recevoir du JSON.grâce aux headers, envoyés en même temps que la requête.
+            body : JSON.stringify(orderKanap),
+            headers : {
                 "Accept" : "application/json",
                 "Content-Type" : "application/json"
             },
         };
         const fetchCart = async () => {
             try {
-              const response = await fetch("http://localhost:3000/api/products/order", options);//passer le contenu à envoyer au service web à notre fonction  fetch()
+              const response = await fetch("http://localhost:3000/api/products/order", options);
               const data = await response.json();
               localStorage.clear();
               document.location.href = "confirmation.html?orderId=" + data.orderId;
